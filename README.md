@@ -8,48 +8,51 @@ NirmaanLens is now a runnable local RAG prototype. It can ingest official Telang
 
 > The software provides preliminary informational research. It is not a government approval, legal opinion, architectural certification, title report, or substitute for a licensed professional.
 
-## Try it locally
+## Run it on Windows 11
 
-Requirements: macOS/Linux, Python 3.11 or newer, Git, and Make.
+Requirements: 64-bit Windows 11, Git, and Python 3.11 or newer. During the Python install, enable **Add python.exe to PATH**. No Docker, WSL, Make, or API key is required for the first demo.
 
-```bash
+Open PowerShell and run:
+
+```powershell
 git clone https://github.com/Missing-Identity/nirmaan-lens.git
 cd nirmaan-lens
-make setup
-make demo
+.\nirmaan.cmd setup
+.\nirmaan.cmd demo
 ```
 
 Open the URL Streamlit prints, normally <http://localhost:8501>. The bundled corpus is synthetic, so the UI works immediately without downloading government PDFs or spending API credits.
 
 An OpenAI key is optional. Without one, the app runs local BM25 plus deterministic feature-hash retrieval and displays extractive evidence. To enable semantic embeddings and grounded answer generation:
 
-```bash
-cp .env.example .env.local
-# Add OPENAI_API_KEY to .env.local, then restart:
-make run
+```powershell
+Copy-Item .env.example .env.local
+notepad .env.local
+# Add OPENAI_API_KEY, save the file, then restart:
+.\nirmaan.cmd run
 ```
 
-See the [complete local runbook](docs/RUN_LOCAL.md) for Apple Silicon setup, official corpus ingestion, tests, and troubleshooting.
+See the [complete local runbook](docs/RUN_LOCAL.md) for Windows setup, official corpus ingestion, tests, VS Code, and troubleshooting. macOS/Linux contributor commands remain available through the `Makefile`.
 
 ## Load official Telangana sources
 
 The versioned [source manifest](sources/manifest.json) starts with the Building Rules, TS-bPASS Act and Rules, 2026 amendments, HMDA planning material, and Telangana Fire sources.
 
-```bash
+```powershell
 # First prove the path with one PDF:
-.venv/bin/nirmaan-lens fetch-official --limit 1
-.venv/bin/nirmaan-lens ingest-official
-.venv/bin/streamlit run app.py
+.\nirmaan.cmd fetch-official --limit 1
+.\nirmaan.cmd ingest-official
+.\nirmaan.cmd run
 
 # Then fetch the complete starter manifest:
-.venv/bin/nirmaan-lens fetch-official
-.venv/bin/nirmaan-lens ingest-official
+.\nirmaan.cmd fetch-official
+.\nirmaan.cmd ingest-official
 ```
 
 PDF pages with insufficient embedded text are reported as needing OCR rather than silently indexed as empty evidence. Run this command to restore the synthetic demo:
 
-```bash
-.venv/bin/nirmaan-lens bootstrap-demo --force
+```powershell
+.\nirmaan.cmd bootstrap-demo --force
 ```
 
 ## What exists in v0.1
@@ -81,8 +84,8 @@ The checked v0.1 run compares a deliberately naive dense top-5 baseline with hyb
 
 Reproduce it with:
 
-```bash
-make eval
+```powershell
+.\nirmaan.cmd eval
 ```
 
 The next credible benchmark is an official-document development set with independently verified source IDs and pages. See [Dataset Bootstrap](docs/DATASET_BOOTSTRAP.md) and [Evaluation Plan](docs/EVALUATION_PLAN.md).
@@ -125,11 +128,11 @@ docs/                         Product, architecture, safety, dataset, and runboo
 
 ## Development commands
 
-```bash
-make doctor
-make test
-make eval
-.venv/bin/nirmaan-lens ask "What is an OC?" --provider local --no-generation
+```powershell
+.\nirmaan.cmd doctor
+.\nirmaan.cmd test
+.\nirmaan.cmd eval
+.\nirmaan.cmd ask "What is an OC?" --provider local --no-generation
 ```
 
 ## Authoritative source families

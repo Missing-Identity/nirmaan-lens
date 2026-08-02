@@ -1,48 +1,63 @@
-# Local Runbook
+# Windows-First Local Runbook
 
-## Fastest path on a MacBook
+## 1. Install the prerequisites
 
-Open Terminal (or the terminal inside VS Code) and run:
+NirmaanLens targets 64-bit Windows 11 first. Install:
 
-```bash
+- Git for Windows;
+- 64-bit Python 3.11 or newer from python.org;
+- a modern browser.
+
+In the Python installer, enable **Add python.exe to PATH**. The Python launcher (`py.exe`) is preferred when it is available.
+
+Docker Desktop, WSL, Make, Visual Studio build tools, and an OpenAI API key are not required for the bundled demo.
+
+## 2. Clone and set up
+
+Open PowerShell or the PowerShell terminal in VS Code:
+
+```powershell
 git clone https://github.com/Missing-Identity/nirmaan-lens.git
 cd nirmaan-lens
-python3 --version
-make setup
-make demo
+.\nirmaan.cmd setup
 ```
 
-Python must be 3.11 or newer. On a fresh Mac, install command-line developer tools if Git or Make is missing:
+The setup command:
 
-```bash
-xcode-select --install
+1. verifies Python 3.11+;
+2. creates `.venv` with the Windows interpreter layout;
+3. upgrades pip inside that environment;
+4. installs the application and development dependencies.
+
+You do not have to activate the virtual environment. The launcher always uses `.venv\Scripts\python.exe` directly, which avoids the most common PowerShell activation-policy problem.
+
+## 3. Start the free demo
+
+```powershell
+.\nirmaan.cmd demo
 ```
 
-If the system Python is too old, install a current Python from Homebrew or python.org, then rerun `make setup`.
+Open the URL Streamlit prints, normally <http://localhost:8501>. Press `Ctrl+C` in PowerShell to stop it.
 
-Streamlit prints a local URL, normally `http://localhost:8501`. Press `Control-C` in the terminal to stop it.
+The demo installs the bundled synthetic fixture corpus and uses local BM25 plus deterministic feature-hash retrieval. It exercises the UI, hybrid ranking, citations, abstention, and evaluation mechanics without network calls or API charges. It is not a production semantic model or a source for real building decisions.
 
-## Zero-cost mode
+Try these prompts:
 
-`make demo` installs the synthetic fixture corpus and starts the app. The local provider combines BM25 with deterministic feature hashing. It is useful for UI work, tests, evaluation mechanics, and offline development; it is not a production semantic embedding model.
+1. `When is a building treated as high-rise?`
+2. `What information is needed to check setbacks?`
+3. `Can I build inside a lake's full tank level?`
+4. `Who won yesterday's cricket match?` — this should abstain.
 
-No API key is needed. In the sidebar:
+## 4. Optional OpenAI mode
 
-1. Select `local` as the embedding provider.
-2. Leave grounded answer generation disabled.
-3. Try “When is a building treated as high-rise?”
-4. Inspect sparse, dense, and fused scores in the evidence trail.
-5. Open Evaluation and run the 60-case benchmark.
+Create the ignored local configuration file:
 
-## OpenAI semantic mode
-
-Create a local environment file:
-
-```bash
-cp .env.example .env.local
+```powershell
+Copy-Item .env.example .env.local
+notepad .env.local
 ```
 
-Edit `.env.local`:
+Add the key and save:
 
 ```dotenv
 OPENAI_API_KEY=your_key_here
@@ -50,87 +65,137 @@ OPENAI_MODEL=gpt-5.6-terra
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
-The key file is ignored by Git. Never paste a real key into an issue, commit, screenshot, or chat log.
+Then restart:
 
-Restart the app with `make run`, select `openai`, and enable grounded answer generation. Corpus embeddings are cached by the embedding model plus the SHA-256 hash of each chunk, so unchanged text is not embedded again.
-
-## Official PDF mode
-
-The source manifest contains verified government or government-catalogued URLs. Start with one source:
-
-```bash
-.venv/bin/nirmaan-lens fetch-official --limit 1
-.venv/bin/nirmaan-lens ingest-official
-.venv/bin/nirmaan-lens doctor
-.venv/bin/streamlit run app.py
+```powershell
+.\nirmaan.cmd run
 ```
 
-That first document is G.O.Ms.No.168. In the current parser smoke test it produces hundreds of page-aware chunks and retains PDF page numbers in each result.
+Select `openai` in the sidebar and enable grounded answer generation. Corpus embeddings are cached using the embedding model and the SHA-256 hash of each chunk, so unchanged text is not embedded again.
 
-Fetch all starter sources when the one-document path works:
+Never place a real key in a commit, issue, screenshot, or terminal command that will be shared. `.env.local` is ignored by Git.
 
-```bash
-.venv/bin/nirmaan-lens fetch-official
-.venv/bin/nirmaan-lens ingest-official
+## 5. Load official Telangana PDFs
+
+Prove the download and parser path with one source first:
+
+```powershell
+.\nirmaan.cmd fetch-official --limit 1
+.\nirmaan.cmd ingest-official
+.\nirmaan.cmd doctor
+.\nirmaan.cmd run
 ```
 
-The ingestion report is written to `data/processed/ingestion_report.jsonl`. Scanned sources with too little embedded text are labeled `needs_ocr`; they are not silently treated as searchable.
+The first manifest entry is G.O.Ms.No.168. Parsed results preserve the PDF page number used by citations.
 
-To return to the bundled fixture corpus:
+Fetch the complete starter manifest after the one-document path works:
 
-```bash
-.venv/bin/nirmaan-lens bootstrap-demo --force
+```powershell
+.\nirmaan.cmd fetch-official
+.\nirmaan.cmd ingest-official
 ```
 
-## Terminal-only use
+The ingestion report is written to `data\processed\ingestion_report.jsonl`. Scanned sources with too little embedded text are labelled `needs_ocr`; they are not silently treated as searchable.
 
-```bash
-.venv/bin/nirmaan-lens ask "What height is defined as high-rise?" \
-  --provider local --no-generation
+Restore the synthetic demo at any time:
+
+```powershell
+.\nirmaan.cmd bootstrap-demo --force
 ```
 
-Remove `--no-generation` and use `--provider openai` for a grounded generated response.
+## 6. Terminal and development commands
 
-## Validation
+Ask a question without opening the UI:
 
-```bash
-make doctor
-make test
-make eval
+```powershell
+.\nirmaan.cmd ask "What height is defined as high-rise?" --provider local --no-generation
 ```
 
-Expected v0.1 checks:
+Run the checks used by Windows CI:
 
-- 13 tests pass;
-- the evaluation suite reports 60 cases;
-- the active demo corpus reports 16 chunks, 15 pages, and 5 synthetic sources;
-- the synthetic hybrid benchmark reports Hit Rate, MRR, NDCG, and abstention metrics.
+```powershell
+.\nirmaan.cmd doctor
+.\nirmaan.cmd check
+.\nirmaan.cmd eval
+```
 
-## Common problems
+`check` runs Ruff linting, Ruff formatting verification, and Pytest. `eval` runs the 60-case synthetic silver benchmark in offline mode.
 
-### `python3` is too old
+Show every launcher command:
 
-Install Python 3.11+ and delete `.venv`, then rerun `make setup`. Deleting `.venv` only removes the reproducible local environment; it does not remove source code or datasets.
+```powershell
+.\nirmaan.cmd help
+```
+
+## 7. VS Code setup
+
+After running setup:
+
+1. Open the repository folder in VS Code.
+2. Press `Ctrl+Shift+P`.
+3. Choose **Python: Select Interpreter**.
+4. Select `.venv\Scripts\python.exe`.
+5. Use the integrated PowerShell terminal for `nirmaan.cmd` commands.
+
+Activating `.venv` is optional. If you do activate it, PowerShell may ask about script execution policy; the checked-in `.cmd` launcher avoids that requirement and is the supported path.
+
+## 8. Troubleshooting
+
+### Python is not found
+
+Close and reopen PowerShell after installing Python, then run:
+
+```powershell
+py -3 --version
+python --version
+```
+
+At least one command must resolve to Python 3.11 or newer. If neither works, rerun the Python installer and enable **Add python.exe to PATH**.
+
+### The virtual environment contains the wrong Python
+
+The `.venv` directory is disposable and ignored by Git. Remove only that directory and repeat setup:
+
+```powershell
+Remove-Item -Recurse -Force .venv
+.\nirmaan.cmd setup
+```
+
+### PowerShell blocks `.ps1` scripts
+
+Use `.\nirmaan.cmd ...`, not the internal script directly. The launcher applies `ExecutionPolicy Bypass` only to its child process; it does not change the machine or user execution policy.
 
 ### Port 8501 is busy
 
-```bash
-.venv/bin/streamlit run app.py --server.port 8502
+```powershell
+.\nirmaan.cmd run --server.port 8502
 ```
 
 ### The model call fails
 
-Run `make doctor`, verify that `openai_key_configured` is `true`, and try local mode. Retrieval and evidence display remain usable without generation.
+Run `.\nirmaan.cmd doctor`, verify `openai_key_configured` is `true`, and try local mode. Retrieval and the evidence display remain usable without answer generation.
 
 ### A PDF reports `needs_ocr`
 
-The source is likely scanned. OCR is a planned pipeline stage. Do not hand-label an empty parse as a successful ingestion.
+The source is likely scanned. OCR is a planned pipeline stage. Do not hand-label an empty parse as successful ingestion.
 
 ### Reset only the runtime corpus
 
-```bash
-.venv/bin/nirmaan-lens bootstrap-demo --force
+```powershell
+.\nirmaan.cmd bootstrap-demo --force
 ```
 
-Runtime data, artifacts, caches, and secrets are ignored by Git.
+Runtime data, artifacts, caches, virtual environments, and secrets are ignored by Git.
 
+## macOS/Linux contributor path
+
+The code remains cross-platform. Contributors on macOS or Linux can use:
+
+```bash
+make setup
+make demo
+make test
+make eval
+```
+
+Windows behavior is a release gate: the Windows launcher and benchmark run on `windows-latest` for every pull request and push to `main`.

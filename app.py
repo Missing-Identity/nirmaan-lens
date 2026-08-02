@@ -198,10 +198,10 @@ with sources_tab:
         }
     st.dataframe(list(source_rows.values()), use_container_width=True, hide_index=True)
     st.code(
-        ".venv/bin/nirmaan-lens fetch-official\n"
-        ".venv/bin/nirmaan-lens ingest-official\n"
-        ".venv/bin/streamlit run app.py",
-        language="bash",
+        ".\\nirmaan.cmd fetch-official --limit 1\n"
+        ".\\nirmaan.cmd ingest-official\n"
+        ".\\nirmaan.cmd run",
+        language="powershell",
     )
 
 st.divider()

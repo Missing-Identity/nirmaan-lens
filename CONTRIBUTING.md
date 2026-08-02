@@ -1,6 +1,6 @@
 # Contributing
 
-NirmaanLens is in a documentation-first architecture phase. Early contributions should improve product scope, source provenance, evaluation quality, or architecture decisions before adding broad implementation code.
+NirmaanLens is a runnable early prototype. Early contributions should improve product scope, source provenance, evaluation quality, architecture decisions, or the benchmarked implementation.
 
 ## Good first contributions
 
@@ -38,14 +38,22 @@ Material technical choices are documented as Architecture Decision Records in `d
 
 ## Development workflow
 
-Once implementation begins:
-
 1. Open or select an issue with acceptance criteria.
 2. Create a focused branch.
 3. Keep unrelated changes separate.
 4. Add tests and evaluation cases for behavior changes.
 5. Record model, corpus, and configuration versions for retrieval experiments.
 6. Submit a pull request explaining the measured impact and limitations.
+
+Windows 11 is the primary development target. From PowerShell:
+
+```powershell
+.\nirmaan.cmd setup
+.\nirmaan.cmd check
+.\nirmaan.cmd eval
+```
+
+The Windows launcher is exercised on `windows-latest` in CI. macOS/Linux contributors can use `make setup`, `make test`, and `make eval`.
 
 ## Safety
 

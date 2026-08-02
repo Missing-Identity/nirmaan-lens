@@ -9,7 +9,42 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  windows:
+    name: Windows 11 / Python 3.12
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Set up through the Windows launcher
+        shell: pwsh
+        run: .\nirmaan.cmd setup
+
+      - name: Check environment
+        shell: pwsh
+        run: .\nirmaan.cmd doctor
+
+      - name: Verify CLI argument forwarding
+        shell: pwsh
+        run: .\nirmaan.cmd bootstrap-demo --force
+
+      - name: Lint, format-check, and test
+        shell: pwsh
+        run: .\nirmaan.cmd check
+
+      - name: Run retrieval benchmark
+        shell: pwsh
+        run: .\nirmaan.cmd eval
+
+  linux:
+    name: Linux compatibility / Python 3.12
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -35,4 +70,3 @@ jobs:
         env:
           NIRMAAN_OFFLINE: "1"
         run: pytest
-

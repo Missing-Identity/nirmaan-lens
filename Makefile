@@ -21,3 +21,5 @@ eval:
 doctor:
 	.venv/bin/nirmaan-lens doctor
 
+# Windows 11 is the primary platform. These targets remain for macOS/Linux contributors;
+# the equivalent Windows entry point is `.\nirmaan.cmd <command>`.

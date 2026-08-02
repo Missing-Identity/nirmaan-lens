@@ -4,6 +4,7 @@
 
 | Requirement | Status | Current implementation |
 |---|---|---|
+| Windows-first local development | Shipped | `nirmaan.cmd` + PowerShell command runner, Windows venv paths, Windows CI release gate |
 | Page-number citations | Shipped | Page-first parsing, citation keys, evidence display, allow-list validation |
 | Hybrid dense + sparse retrieval | Shipped | BM25 + OpenAI embeddings/local test vectors + reciprocal-rank fusion |
 | Chunking >=500/50 | Shipped | 550-token children with 75-token overlap and enforced minimums |
@@ -35,4 +36,3 @@
 | >=80% warm embedding-stage reduction | v0.2 benchmark | Defined cold/warm workload with cache hits, p50/p95, and invalidation tests |
 
 The project treats every advanced retrieval component as an ablation candidate. A technique is promoted to the default pipeline only when it improves the frozen benchmark enough to justify its cost and latency.
-
