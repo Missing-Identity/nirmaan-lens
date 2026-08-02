@@ -4,8 +4,10 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.cache/
 .venv/
 venv/
+*.egg-info/
 
 # JavaScript
 node_modules/
