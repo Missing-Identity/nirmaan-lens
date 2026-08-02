@@ -1,5 +1,7 @@
 # NirmaanLens Hyderabad
 
+[![CI](https://github.com/Missing-Identity/nirmaan-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/Missing-Identity/nirmaan-lens/actions/workflows/ci.yml)
+
 **Source-grounded, time-aware building-permission intelligence for Hyderabad.**
 
 NirmaanLens is now a runnable local RAG prototype. It can ingest official Telangana PDFs, preserve PDF page numbers through retrieval, combine sparse and dense search, ground generated answers in retrieved evidence, validate citations, abstain on weak evidence, and show retrieval metrics in a Streamlit dashboard.
