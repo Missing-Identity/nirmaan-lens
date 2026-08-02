@@ -1,0 +1,43 @@
+name: Official source proposal
+description: Propose an authoritative document for the controlled corpus.
+title: "[Source]: "
+labels:
+  - corpus
+  - triage
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Canonical official URL
+    validations:
+      required: true
+  - type: input
+    id: authority
+    attributes:
+      label: Issuing authority
+    validations:
+      required: true
+  - type: textarea
+    id: identity
+    attributes:
+      label: Document identity and dates
+      description: Include title, number, publication date, and effective date if known.
+    validations:
+      required: true
+  - type: textarea
+    id: relevance
+    attributes:
+      label: Jurisdiction, topics, and relevant pages
+    validations:
+      required: true
+  - type: textarea
+    id: relationships
+    attributes:
+      label: Amendments, clarifications, or superseded material
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Safety check
+      options:
+        - label: This proposal does not contain private property documents, credentials, or direct personal identifiers.
+          required: true
